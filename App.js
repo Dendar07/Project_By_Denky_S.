@@ -14,9 +14,9 @@ import {
 const ToDoApp = () => {
   const [tasks, setTasks] = useState([]);
   const [taskText, setTaskText] = useState('');
-  const fadeAnim = new Animated.Value(1); // Untuk animasi fade-in
+  const fadeAnim = new Animated.Value(1);
 
-  // Fungsi untuk menambahkan tugas
+  
   const addTask = () => {
     if (taskText.trim() === '') {
       Alert.alert('Peringatan', 'Tugas tidak boleh kosong!');
@@ -32,7 +32,7 @@ const ToDoApp = () => {
     }).start();
   };
 
-  // Fungsi untuk menghapus tugas dengan konfirmasi
+  
   const deleteTask = (taskId) => {
     Alert.alert(
       'Konfirmasi',
