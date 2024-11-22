@@ -1,57 +1,43 @@
 import React, { useState } from 'react';
-import { 
-  View, 
-  TextInput, 
-  Button, 
-  FlatList, 
-  Text, 
-  StyleSheet, 
-  Alert, 
-  TouchableOpacity, 
-  Animated 
+import {
+  View,
+  TextInput,
+  FlatList,
+  Text,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+  Animated,
 } from 'react-native';
 
 const ToDoApp = () => {
   const [tasks, setTasks] = useState([]);
   const [taskText, setTaskText] = useState('');
-  const fadeAnim = new Animated.Value(1);
 
-  
+  // Fungsi untuk menambahkan tugas
   const addTask = () => {
     if (taskText.trim() === '') {
       Alert.alert('Peringatan', 'Tugas tidak boleh kosong!');
       return;
     }
-    const newTask = { id: Date.now().toString(), text: taskText };
+    const newTask = { id: Date.now().toString(), text: taskText, fadeAnim: new Animated.Value(1) };
     setTasks((prevTasks) => [...prevTasks, newTask]);
     setTaskText('');
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
   };
 
-  
+  // Fungsi untuk menghapus tugas dengan animasi fade-out
   const deleteTask = (taskId) => {
-    Alert.alert(
-      'Konfirmasi',
-      'Apakah Anda yakin ingin menghapus tugas ini?',
-      [
-        { text: 'Batal', style: 'cancel' },
-        { 
-          text: 'Hapus', 
-          onPress: () => {
-            setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
-            Animated.timing(fadeAnim, {
-              toValue: 0,
-              duration: 500,
-              useNativeDriver: true,
-            }).start();
-          } 
-        },
-      ]
-    );
+    const taskToDelete = tasks.find((task) => task.id === taskId);
+
+    if (taskToDelete) {
+      Animated.timing(taskToDelete.fadeAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => {
+        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+      });
+    }
   };
 
   return (
@@ -73,10 +59,10 @@ const ToDoApp = () => {
         data={tasks}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <Animated.View style={[styles.taskContainer, { opacity: fadeAnim }]}>
+          <Animated.View style={[styles.taskContainer, { opacity: item.fadeAnim }]}>
             <Text style={styles.taskText}>{item.text}</Text>
-            <TouchableOpacity 
-              onPress={() => deleteTask(item.id)} 
+            <TouchableOpacity
+              onPress={() => deleteTask(item.id)}
               style={styles.deleteButton}
             >
               <Text style={styles.deleteText}>Hapus</Text>
